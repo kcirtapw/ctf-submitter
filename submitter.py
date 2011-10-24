@@ -8,7 +8,7 @@ class submitter(threading.Thread):
 	def __init__(self, gs_iface, queue):
 		self.__gs_iface = gs_iface #GameServer Interface
 		self.__q = queue
-	
+
 	def run(self):
 		while true:
 			f = self.__q.get()

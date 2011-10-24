@@ -3,7 +3,7 @@
 import socket
 
 class gs_interface:
-	
+
 	def __init__(self, srv_addr, srv_port, timeout = None):
 		self.__srv_addr = srv_addr
 		self.__srv_port = srv_port
@@ -11,12 +11,12 @@ class gs_interface:
 			self.__timeout = socket.getdefaulttimeout()
 		else
 			self.__timeout = timeout
-		self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-	
+		self.__sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 	def open(self):
 		self.__sock.connect((self.__srv_addr,self.__srv_port))
 		#here could some "authentification" added if needed
-	
+
 	def submit(self,flag):
 		try
 			self.__sock.send(flag)
@@ -26,7 +26,7 @@ class gs_interface:
 			self.__sock.send(flag)
 			continue
 		return self.__sock.recv(1024)
-	
+
 	def close(self):
 		#here can come some proper connection closing if needed
 		self.__sock.close()
