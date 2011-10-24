@@ -11,7 +11,7 @@ class Flag:
 		return Flag._endQueue
 
 class InstantFlag(Flag):
-	def __init__(self, flag, socket)
+	def __init__(self, flag, socket):
 		Flag.__init__(self,flag)
 		self.__socket = socket
 	
