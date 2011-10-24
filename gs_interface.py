@@ -7,7 +7,7 @@ class gs_interface:
 	def __init__(self, srv_addr, srv_port, timeout = None):
 		self.__srv_addr = srv_addr
 		self.__srv_port = srv_port
-		if(timeout == None)
+		if(timeout == None):
 			self.__timeout = socket.getdefaulttimeout()
 		else
 			self.__timeout = timeout
