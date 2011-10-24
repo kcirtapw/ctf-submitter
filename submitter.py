@@ -10,7 +10,7 @@ class submitter(threading.Thread):
 		self.__q = queue
 	
 	def run(self):
-		while true:
+		while True:
 			f = self.__q.get()
 			f.setReturn(self.__gs_iface.submit(f.getFlag()))
 			for q in f.getEndQueue():
