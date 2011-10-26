@@ -1,10 +1,10 @@
-what is this all about?
+What is this all about?
 =======================
 
-while playing CTFs we ran always into the sames problems: 
-submitting captured flags! rather everyone hacked his or her 
-own submitscript, bombing the gameserver with simultanious 
+While playing CTFs we ran always into the same problem: 
+submitting captured flags! Until now everyone hacked his or
+her own submitscript, bombing the gameserver with simultanious 
 connections and tons of old and already submitted flags.
 
-i think we all agree that this is not the way it's meand to be 
+I think we all agree that this is not the way it's meant to be 
 played...
