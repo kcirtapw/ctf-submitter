@@ -1,4 +1,4 @@
-import threading.Thread
+import threading
 
 class FlagInput(threading.Thread):
     def __init__(self, gs_queue):

@@ -1,5 +1,5 @@
 class Flag:
-#    postQueue = None
+    _postProcQueue = None
 
     def __init__(self,flag):
         self._flag = flag

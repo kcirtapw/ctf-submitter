@@ -2,7 +2,7 @@ import threading
 import Queue
 
 class QueueTread(Queue.Queue,threading.Thread):
-    def __init__(self,maxsize=0)
+    def __init__(self,maxsize=0):
         Queue.Queue.__init__(self,maxsize)
         threading.Thread.__init__(self)
 

@@ -1,8 +1,8 @@
 #this is an interface to submit flags to the gameserver
-import lib.QueueThread as QueueThread
+from . import FlagOut
 import socket
 
-class GS_Interface(QueueThread):
+class Gameserver(FlagOut):
     def __init__(self, srv_addr, srv_port, timeout = None, maxsize = 0):
         QueueThread.__init__(maxsize)
         self.__srv_addr = srv_addr
@@ -21,7 +21,7 @@ class GS_Interface(QueueThread):
         #here can come some proper connection closing if needed
         self.__sock.close()
 
-    def _submit(self,flag):
+    def _process(self,flag):
         try
             self.__sock.send(flag)
         except Exception:
@@ -33,11 +33,3 @@ class GS_Interface(QueueThread):
                 self.__sock.close()
             raise e
         return self.__sock.recv(1024)
-
-    def _process(self)
-        while True:
-            f = self.__queue.get()
-            f.setReturn(self._submit(f.getFlag()))
-            for q in f._postProcQueue:
-                q.put(f)
-            self.__queue.task_done()

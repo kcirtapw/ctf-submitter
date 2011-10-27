@@ -1,4 +1,4 @@
-import FlagInput
+from FlagInput import FlagInput
 import socket
 import select
 import flag.InstantFlag as InstantFlag
@@ -11,12 +11,11 @@ class TelnetFlagInput(FlagInput):
         self._socket.listen(1)
         self._clients = []
 
-    def _proc_message(self,msg,sock)
+    def _proc_message(self,msg,sock):
         return InstantFlag(msg,sock)
 
     def run(self):
-         read, write, oob = select.select([self._socket] + self._clients, [], [])
-
+        read, write, oob = select.select([self._socket] + self._clients, [], [])
         for sock in read: 
             if sock is self._socket:
                 client, addr = server.accept()
