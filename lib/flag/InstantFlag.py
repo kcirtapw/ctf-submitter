@@ -1,8 +1,8 @@
-from Flag import Flag
+from . import Flag
 
-class InstantFlag(Flag):
+class InstantFlag(Flag.Flag):
     def __init__(self, flag,client):
-        Flag.__init__(self,flag)
+        Flag.Flag.__init__(self,flag)
         self.__socket = client
 
     def getClient(self):

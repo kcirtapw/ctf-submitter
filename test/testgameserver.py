@@ -2,19 +2,11 @@ import socket
 import select
 import re
 
-#def myclient(object):
-#	def __init__(sock, ip, lastSend):
-#		self.sock = sock
-#		self.ip = ip
-#		self.lastSend = lastSend
-
-
-
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("", 50000))
+server.bind(("", 1337))
 server.listen(1)
-
+flags = []
 clients = []
 
 try:
@@ -24,18 +16,22 @@ try:
 			if sock is server:
 				client, addr = server.accept()
 				clients.append(client)
-				print "+++ Client %s verbunden" % addr[0]
+				print("+++ Client %s verbunden" % addr[0])
 			else:
-				nachricht = sock.recv(1024).lstrip(' \t\n\r')
+				nachricht = sock.recv(1024)
 				ip = sock.getpeername()[0]
 				if nachricht:
-					print "[%s] %s" % (ip, nachricht)
-					if re.match(r"^\w{9}=$",nachricht):
-						sock.send("valid flag\n")
+					nachricht = str(nachricht,encoding='UTF-8',errors='ignore').strip()
+					print("[%s] %s" % (ip, nachricht))
+					if nachricht in flags:
+						sock.send(bytes("duplicate flag\n",'UTF-8'))
+					elif re.match(r"^\w{9}=$",nachricht):
+						sock.send(bytes("valid flag\n",'UTF-8'))
+						flags.append(nachricht)
 					else:
-						sock.send("invalid flag\n")
+						sock.send(bytes("invalid flag\n",'UTF-8'))
 				else:
-					print "+++ Verbindung zu %s beendet" % ip
+					print("+++ Verbindung zu %s beendet" % ip)
 					sock.close()
 					clients.remove(sock)
 finally:
