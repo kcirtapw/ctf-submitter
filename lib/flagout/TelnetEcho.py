@@ -1,9 +1,9 @@
-from . import FlagOut as FO
+from .FlagOut import FlagOut
 import socket
 
-class TelnetEcho(FO.FlagOut):
+class TelnetEcho(FlagOut):
     def __init__(self,maxsize=0):
-        FO.FlagOut.__init__(self,maxsize)
+        FlagOut.__init__(self,maxsize)
 
-    def _process(flag):
-        flag.getClient().send("you submitted this flag: %s" % flag.getFlag())
+    def _proc_flag(self,flag):
+        flag.getClient().send(bytes("you submitted this flag: %s\nreturn was: %s\n" % (flag.getFlag(),flag.getReturnStr()),'UTF-8'))

@@ -1,5 +1,6 @@
-import threading
+from threading import Thread
 
-class FlagInput(threading.Thread):
-    def __init__(self, gs_queue):
-        self._gs_queue = gs_queue
+class FlagInput(Thread):
+    def __init__(self, flag_queue):
+        Thread.__init__(self)
+        self._flag_queue = flag_queue

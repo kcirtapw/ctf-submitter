@@ -1,13 +1,18 @@
-from .. import QueueThread as QT
-# as QueueThread
+from ..QueueThread import QueueThread
+import pprint
+import time
 
-class FlagOut(QT.QueueThread):
+class FlagOut(QueueThread):
     def __init__(self, maxsize = 0):
-        QT.QueueThread.__init__(maxsize)
+        QueueThread.__init__(self,maxsize)
 
-    def run(self):
-        flag,flag_queue = self.get()
-        flag.setReturn(self._process(flag))
+    def _proc_flag(self,flag):
+        pass
+
+    def _process(self,e):
+        (flag,flag_queue) = e
+        ret = self._proc_flag(flag)
+        if(ret):
+            flag.addReturn(ret)
         for q in flag_queue:
-            q[0].put((f,q[1:]))
-        self.task_done()
+            q[0].put((flag,q[1:]))
