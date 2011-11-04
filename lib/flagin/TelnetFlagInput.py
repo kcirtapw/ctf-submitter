@@ -1,11 +1,13 @@
-from FlagInput import FlagInput
+from . import FlagInput as FI
+
+from ..flag import InstantFlag
+
 import socket
 import select
-import flag.InstantFlag as InstantFlag
 
-class TelnetFlagInput(FlagInput):
+class TelnetFlagInput(FI.FlagInput):
     def __init__(self,gs_queue,bind_addr,bind_port):
-        FlagInput.__init(self,gs_queue)
+        FI.FlagInput.__init(self,gs_queue)
         self._socket = socket.socket()
         self._socket.bind((bind_addr,bind_port))
         self._socket.listen(1)

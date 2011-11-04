@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-import flag.Flag as Flag
-import flag.InstantFlag as InstantFlag
+from lib.flag import Flag
+from lib.flag import InstantFlag
 
-import flagin.TelnetFlagInput as TFI
-import flagout.TelnetEcho as TelnetEcho
+from lib.flagin import TelnetFlagInput as TFI
+from lib.flagout import TelnetEcho as TE
 
 def main():
     f1 = Flag.Flag("abcd")

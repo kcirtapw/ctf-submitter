@@ -1,8 +1,9 @@
-import lib.QueueThread as QueueThread
+from .. import QueueThread as QT
+# as QueueThread
 
-class FlagOut(QueueThread):
+class FlagOut(QT.QueueThread):
     def __init__(self, maxsize = 0):
-        QueueThread.__init__(maxsize)
+        QT.QueueThread.__init__(maxsize)
 
     def run(self):
         flag,flag_queue = self.get()

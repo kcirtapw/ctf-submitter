@@ -1,9 +1,9 @@
 import threading
-import Queue
+import queue
 
-class QueueTread(Queue.Queue,threading.Thread):
+class QueueThread(queue.Queue,threading.Thread):
     def __init__(self,maxsize=0):
-        Queue.Queue.__init__(self,maxsize)
+        queue.Queue.__init__(self,maxsize)
         threading.Thread.__init__(self)
 
     def _process(self,e):
