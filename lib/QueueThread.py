@@ -5,6 +5,7 @@ class QueueThread(Queue,Thread):
     def __init__(self,maxsize=0):
         Queue.__init__(self,maxsize)
         Thread.__init__(self)
+        self.daemon=True
 
     def _process(self,e):
         pass

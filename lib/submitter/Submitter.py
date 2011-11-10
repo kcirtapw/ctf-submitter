@@ -2,7 +2,7 @@ from ..QueueThread import QueueThread
 import pprint
 import time
 
-class FlagOut(QueueThread):
+class Submitter(QueueThread):
     def __init__(self, maxsize = 0):
         QueueThread.__init__(self,maxsize)
 

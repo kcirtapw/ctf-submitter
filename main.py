@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
 from lib.flag import Flag
-from lib.flag import InstantFlag
+from lib.flag import TelnetFlag
 
-from lib.flagin import TelnetFlagInput as TFI
-from lib.flagout import TelnetEcho as TE
-from lib.flagout import Gameserver as GE
+from lib.collector import TelnetCollector as TFI
+from lib.submitter import TelnetEcho as TE
+from lib.submitter import Gameserver as GE
 
 def main():
 #    f1 = Flag.Flag("abcd")
@@ -24,14 +24,17 @@ def main():
     gs = GE.Gameserver('127.0.0.1',1337)
 #hier eine einfache queue: Gameserver -> TelnetEcho
 # dabei wird die antwort vom Gameserver auch an den client geschickt
-    tfi = TFI.TelnetFlagInput( ((gs,(te,)),),50001,'')
+    tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
 #hier ein beispiel fuer eine doppelt zum gameserver schickende queue
 #    tfi = TFI.TelnetFlagInput( ((gs,(gs,(te,))),),50001,'')
     te.start()
     gs.start()
     tfi.start()
     while True:
-        pass
+        try:
+            input()
+        except EOFError:
+            break
 
 if __name__ == "__main__":
     main()

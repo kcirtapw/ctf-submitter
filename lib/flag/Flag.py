@@ -1,18 +1,14 @@
 class Flag:
     _postProcQueue = None
 
-    def __init__(self,flag):
-        self._flag = flag
-        self._ret = []
-
-    def getFlag(self):
-        return self._flag
+    def __init__(self,flag,team=0,service=None,info=None,collected=0,submitted=0):
+        self.flag = flag
+        self.team = team
+        self.service = service
+        self.info = info
+        self.collected = collected
+        self.submitted = submitted
+        self.ret = []
 
     def addReturn(self,ret):
-        self._ret.append(ret)
-
-    def getReturn(self):
-        return self._ret
-    
-    def getReturnStr(self):
-        return str(self._ret)
+        self.ret.append(ret)
