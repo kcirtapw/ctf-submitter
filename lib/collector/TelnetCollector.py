@@ -65,7 +65,7 @@ class TelnetCollector(Collector):
         self._argparser_opt = argparse.ArgumentParser(prefix_chars='?',add_help=False)
         self._argparser_opt.add_argument('?team','?T',nargs=1,type=int)
         self._argparser_opt.add_argument('?service','?S',nargs=1)
-        self._argparser_opt.add_argument('?info',nargs=1)
+        self._argparser_opt.add_argument('?path',nargs=1)
         self._argparser_flag = argparse.ArgumentParser(prefix_chars='?', \
             parents=[self._argparser_opt],add_help=False)
         self._argparser_flag.add_argument('flag')
@@ -122,14 +122,18 @@ class TelnetCollector(Collector):
                     self._clients_env[client] = copy(self._default_env)
                     print("+++ client %s connected" % addr[0])
                 else:
-                    msg = sock.recv(1024)
-                    ip = sock.getpeername()[0]
-                    if msg:
-                        msg = str(msg,encoding='UTF-8',errors='ignore').strip()
-                        print("[%s] %s" % (ip, msg))
-                        self._proc_message(msg,sock)
-                    else:
-                        print("+++ connection to %s closed" % ip)
+                    try:
+                        msg = sock.recv(1024)
+                        ip = sock.getpeername()[0]
+                        if msg:
+                            msg = str(msg,encoding='UTF-8',errors='ignore').strip()
+                            print("[%s] %s" % (ip, msg))
+                            self._proc_message(msg,sock)
+                        else:
+                            print("+++ connection to %s closed" % ip)
+                            self._clients.remove(sock)
+                            del self._clients_env[sock]
+                            sock.close()
+                    except socket.error as er:
+                        print("error with socket: %s\n" % er)
                         self._clients.remove(sock)
-                        del self._clients_env[sock]
-                        sock.close()
