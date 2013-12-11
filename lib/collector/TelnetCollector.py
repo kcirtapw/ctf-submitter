@@ -53,6 +53,8 @@ possivle flag options
 class TelnetCollector(Collector):
     def __init__(self,flag_queue,bind_port,bind_addr):
         Collector.__init__(self,flag_queue)
+        self._bind_addr = bind_addr
+        self._bind_port = bind_port
         self._socket = socket.socket()
         self._socket.bind((bind_addr,bind_port))
         self._socket.listen(1)
@@ -75,6 +77,11 @@ class TelnetCollector(Collector):
     def __del__(self):
         self._socket.close()
         print("TelnetCollector stops listening...")
+        
+    def _cleanSetup(self, error=None):
+        self._socket.close()
+        self._socket.bind((self._bind_addr,self._bind_port))
+        self._socket.listen(1)
 
     def _send(self,sock,msg,enc='UTF-8'):
         sock.send(bytes(msg,enc))
@@ -110,30 +117,37 @@ class TelnetCollector(Collector):
             flag = TelnetFlag(parsed[0].flag,sock,team=parsed[0].team)
             for q in self._flag_queue:
                 q[0].put((flag,q[1:]))
+            
+    def doStuff(self):
+        read, write, oob = select.select([self._socket] + self._clients, [], [])
+        for sock in read:
+            if sock is self._socket:
+                client, addr = sock.accept()
+                self._clients.append(client)
+                self._clients_env[client] = copy(self._default_env)
+                print("+++ client %s connected" % addr[0])
+            else:
+                try:
+                    msg = sock.recv(1024)
+                    ip = sock.getpeername()[0]
+                    if msg:
+                        msg = str(msg,encoding='UTF-8',errors='ignore').strip()
+                        print("[%s] %s" % (ip, msg))
+                        self._proc_message(msg,sock)
+                    else:
+                        print("+++ connection to %s closed" % ip)
+                        self._clients.remove(sock)
+                        del self._clients_env[sock]
+                        sock.close()
+                except socket.error as er:
+                    print("error with socket: %s\n" % er)
+                    self._clients.remove(sock)
 
     def run(self):
-        print("accepting connectons")
+        print("accepting connections")
         while True:
-            read, write, oob = select.select([self._socket] + self._clients, [], [])
-            for sock in read:
-                if sock is self._socket:
-                    client, addr = sock.accept()
-                    self._clients.append(client)
-                    self._clients_env[client] = copy(self._default_env)
-                    print("+++ client %s connected" % addr[0])
-                else:
-                    try:
-                        msg = sock.recv(1024)
-                        ip = sock.getpeername()[0]
-                        if msg:
-                            msg = str(msg,encoding='UTF-8',errors='ignore').strip()
-                            print("[%s] %s" % (ip, msg))
-                            self._proc_message(msg,sock)
-                        else:
-                            print("+++ connection to %s closed" % ip)
-                            self._clients.remove(sock)
-                            del self._clients_env[sock]
-                            sock.close()
-                    except socket.error as er:
-                        print("error with socket: %s\n" % er)
-                        self._clients.remove(sock)
+            try:
+                self.doStuff()
+            except Exception as e:
+                print(e)
+                self._cleanSetup(e)

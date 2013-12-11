@@ -34,6 +34,7 @@ def main():
     gs.start()
     tfi.start()
     while True:
+        """
         if not te.isAlive():
             print("TelnetEcho dead, restarting...")
             te = TE.TelnetEcho()
@@ -59,6 +60,7 @@ def main():
             tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
             tfi.daemon = True
             tfi.start()
+        """
         try:
             input()
         except EOFError:
