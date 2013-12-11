@@ -27,10 +27,38 @@ def main():
     tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
 #hier ein beispiel fuer eine doppelt zum gameserver schickende queue
 #    tfi = TFI.TelnetFlagInput( ((gs,(gs,(te,))),),50001,'')
+    te.daemon = True
+    gs.daemon = True
+    tfi.daemon = True
     te.start()
     gs.start()
     tfi.start()
     while True:
+        if not te.isAlive():
+            print("TelnetEcho dead, restarting...")
+            te = TE.TelnetEcho()
+            te.daemon = True
+            te.start()
+            del tfi
+            tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
+            tfi.daemon = True
+            tfi.start()
+        if not gs.isAlive():
+            print("GameServer dead, restarting...")
+            del gs
+            gs = GE.Gameserver('127.0.0.1',1337)
+            gs.daemon = True
+            gs.start()
+            del tfi
+            tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
+            tfi.daemon = True
+            tfi.start()
+        if not tfi.isAlive():
+            print("TelnetCollector dead, restarting...")
+            del tfi
+            tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
+            tfi.daemon = True
+            tfi.start()
         try:
             input()
         except EOFError:
