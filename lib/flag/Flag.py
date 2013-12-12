@@ -12,3 +12,7 @@ class Flag:
 
     def addReturn(self,ret):
         self.ret.append(ret)
+
+    def __str__(self):
+        return "%s(%s@%s)" % (self.flag,self.service,self.team)
+
