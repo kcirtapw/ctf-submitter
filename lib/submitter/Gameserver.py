@@ -3,21 +3,20 @@ from .Submitter import Submitter
 import socket
 
 class Gameserver(Submitter):
-    def __init__(self, srv_addr, srv_port, timeout = None, maxsize = 0):
+    def __init__(self, srv_addr, srv_port, maxsize = 0):
         self._srv_addr = srv_addr
         self._srv_port = srv_port
-        Submitter.__init__(self,maxsize)
-#        if(timeout == None):
-#            self.__timeout = socket.getdefaulttimeout()
-#        else
-#            self.__timeout = timeout
         self._sock = None
+        Submitter.__init__(self,maxsize)
 
     def __del__(self):
         self._close()
 
-    def _cleanSetup(self,option=None):
+    def _cleanSetup(self,error=None):
         self._close()
+        self._open()
+
+    def _open(self,option=None):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.connect((self._srv_addr,self._srv_port))
         #here could some "authentification" be added if needed
@@ -37,7 +36,6 @@ class Gameserver(Submitter):
             self._send(flag.flag)
         except Exception:
             self._cleanSetup()
-            #print("connection to gameserver timed out; reconnected and retransmitting")
             try:
                 self._send(flag.flag)
             except Exception as e:
