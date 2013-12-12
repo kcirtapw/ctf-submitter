@@ -52,13 +52,10 @@ possivle flag options
 
 class TelnetCollector(Collector):
     def __init__(self,flag_queue,bind_port,bind_addr):
-        Collector.__init__(self,flag_queue)
         self._bind_addr = bind_addr
         self._bind_port = bind_port
-        self._socket = socket.socket()
-        self._socket.bind((bind_addr,bind_port))
-        self._socket.listen(1)
         self._clients = []
+        Collector.__init__(self,flag_queue,True)
         self._default_env = argparse.Namespace(verbose=True)
         self._clients_env = dict()
         self._init_argparser()
@@ -74,12 +71,19 @@ class TelnetCollector(Collector):
         self._argparser_cmd = argparse.ArgumentParser(prefix_chars='?',add_help=False)
         self._argparser_cmd.add_argument('command')
 
-    def __del__(self):
-        self._socket.close()
-        print("TelnetCollector stops listening...")
-        
+    def _cleanup(self):
+        try:
+            self._log("stops listening...")
+            self._socket.close()
+        except socket.error:
+            pass
+
     def _cleanSetup(self, error=None):
-        self._socket.close()
+        try:
+            self._socket.close()
+        except Exception:
+            pass
+        self._socket = socket.socket()
         self._socket.bind((self._bind_addr,self._bind_port))
         self._socket.listen(1)
 
@@ -89,7 +93,7 @@ class TelnetCollector(Collector):
     def _proc_message(self,msg,sock):
         to_parse=msg
         if msg == '':
-            self._send(sock,'.')
+            self._send(sock,'.\n')
             return
         elif msg[0] == '!':
             parser = self._argparser_cmd
@@ -118,36 +122,29 @@ class TelnetCollector(Collector):
             for q in self._flag_queue:
                 q[0].put((flag,q[1:]))
             
-    def doStuff(self):
-        read, write, oob = select.select([self._socket] + self._clients, [], [])
+    def _execute(self):
+        read, write, oob = select.select([self._socket] + self._clients, [], [], 1)
         for sock in read:
             if sock is self._socket:
                 client, addr = sock.accept()
                 self._clients.append(client)
                 self._clients_env[client] = copy(self._default_env)
-                print("+++ client %s connected" % addr[0])
+                self._log("+++ client %s connected" % addr[0])
             else:
                 try:
                     msg = sock.recv(1024)
                     ip = sock.getpeername()[0]
                     if msg:
                         msg = str(msg,encoding='UTF-8',errors='ignore').strip()
-                        print("[%s] %s" % (ip, msg))
-                        self._proc_message(msg,sock)
+                        self._log("[%s] %s" % (ip, msg))
+                        for s in msg.split("\n"):
+                            self._proc_message(s,sock)
                     else:
-                        print("+++ connection to %s closed" % ip)
+                        self._log("--- client %s disconnected" % ip)
                         self._clients.remove(sock)
                         del self._clients_env[sock]
                         sock.close()
                 except socket.error as er:
-                    print("error with socket: %s\n" % er)
+                    self._log("error with socket: %s" % er)
                     self._clients.remove(sock)
 
-    def run(self):
-        print("accepting connections")
-        while True:
-            try:
-                self.doStuff()
-            except Exception as e:
-                print(e)
-                self._cleanSetup(e)

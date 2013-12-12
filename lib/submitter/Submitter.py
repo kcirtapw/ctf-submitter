@@ -1,15 +1,13 @@
-from ..QueueThread import QueueThread
-import pprint
-import time
+from d3lib.QueueThread import QueueThread
 
 class Submitter(QueueThread):
-    def __init__(self, maxsize = 0):
-        QueueThread.__init__(self,maxsize)
+    def __init__(self, maxsize = 0,autoSetup=True):
+        QueueThread.__init__(self,maxsize,autoSetup)
 
     def _proc_flag(self,flag):
         pass
 
-    def _process(self,e):
+    def _process(self, e):
         (flag,flag_queue) = e
         ret = self._proc_flag(flag)
         if(ret):

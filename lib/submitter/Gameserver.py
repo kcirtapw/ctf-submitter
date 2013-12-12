@@ -19,6 +19,7 @@ class Gameserver(Submitter):
     def _open(self,option=None):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.connect((self._srv_addr,self._srv_port))
+        self._log("connected to gameserver: %s:%s" % (self._srv_addr,self._srv_port))
         #here could some "authentification" be added if needed
 
     def _close(self,option=None):
@@ -32,14 +33,9 @@ class Gameserver(Submitter):
         self._sock.send(bytes(string,'UTF-8'))
 
     def _proc_flag(self,flag):
-        try:
-            self._send(flag.flag)
-        except Exception:
-            self._cleanSetup()
-            try:
-                self._send(flag.flag)
-            except Exception as e:
-                self._sock.close()
-                print("exception: %s"% e)
-                return None
-        return str(self._sock.recv(1024),encoding='UTF-8',errors='ignore').strip()
+        self._send(flag.flag)
+        result = str(self._sock.recv(4096),encoding='UTF-8').strip()
+        if result == "":
+            raise Exception("got no return from gameserver, probably down")
+        self._log("submitted flag \"%s\", got:\n%s" % (flag.flag,result))
+        return result
