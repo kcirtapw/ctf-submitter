@@ -7,6 +7,7 @@ from lib.collector import TelnetCollector as TFI
 from lib.submitter import TelnetEcho as TE
 from lib.submitter import Gameserver as GE
 
+
 def main():
 #    f1 = Flag.Flag("abcd")
 #    print("flags %s queue is: %s" % (f1.getFlag(),f1._postProcQueue))
@@ -20,17 +21,17 @@ def main():
 #    f2 = Flag.Flag("1234")
 #    print("flags %s queue is: %s" % (f2.getFlag(),f2._postProcQueue))
 #    (gs,)
-    te = TE.TelnetEcho()
+#    te = TE.TelnetEcho()
     gs = GE.Gameserver('127.0.0.1',1337)
 #hier eine einfache queue: Gameserver -> TelnetEcho
 # dabei wird die antwort vom Gameserver auch an den client geschickt
-    tfi = TFI.TelnetCollector( ((gs,(te,)),),50001,'')
+    tfi = TFI.TelnetCollector( ((gs,),),50001,'')
 #hier ein beispiel fuer eine doppelt zum gameserver schickende queue
 #    tfi = TFI.TelnetFlagInput( ((gs,(gs,(te,))),),50001,'')
-    te.daemon = True
+#    te.daemon = True
     gs.daemon = True
-    tfi.daemon = True
-    te.start()
+#    tfi.daemon = True
+#    te.start()
     gs.start()
     tfi.start()
     while True:
@@ -64,6 +65,12 @@ def main():
         try:
             input()
         except EOFError:
+            print("shutting down...\n")
+            tfi.stop()
+            break
+        except KeyboardInterrupt:
+            print("shutting down...\n")
+            tfi.stop()
             break
 
 if __name__ == "__main__":
